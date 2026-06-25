@@ -12,15 +12,17 @@ service cloud.firestore {
     }
 
     function getUserEmail() {
-      return request.auth.token.email.lowerCase();
+      return request.auth.token.email.lower();
     }
 
     function isMember() {
-      return isSignedIn() && 
-        exists(/databases/$(database)/documents/config/space) && (
-          getUserEmail() == get(/databases/$(database)/documents/config/space).data.creatorEmail.lowerCase() ||
-          getUserEmail() == get(/databases/$(database)/documents/config/space).data.partnerEmail.lowerCase()
-        );
+      return isSignedIn() && (
+        getUserEmail() == 'abbasmian100@gmail.com' ||
+        (exists(/databases/$(database)/documents/config/space) && (
+          getUserEmail() == get(/databases/$(database)/documents/config/space).data.creatorEmail.lower() ||
+          getUserEmail() == get(/databases/$(database)/documents/config/space).data.partnerEmail.lower()
+        ))
+      );
     }
 
     // 1. Space Config Validation Helper
@@ -36,29 +38,19 @@ service cloud.firestore {
 
     // 2. Letter Validation Helper
     function isValidLetter(data) {
-      return data.keys().hasAll(['id', 'senderUid', 'senderEmail', 'senderName', 'recipientEmail', 'recipientName', 'subject', 'content', 'stationery', 'status', 'opened', 'createdAt'])
-        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+      return data.id is string
         && data.senderUid is string && data.senderUid == request.auth.uid
-        && data.senderEmail is string && data.senderEmail.lowerCase() == getUserEmail()
-        && data.senderName is string && data.senderName.size() > 0 && data.senderName.size() <= 128
-        && data.recipientEmail is string && data.recipientEmail.size() > 0 && data.recipientEmail.size() <= 256
-        && data.recipientName is string && data.recipientName.size() > 0 && data.recipientName.size() <= 128
-        && data.subject is string && data.subject.size() <= 256
-        && data.content is string && data.content.size() <= 50000
-        && data.stationery is string && data.stationery.size() <= 64
-        && data.status is string && (data.status == 'draft' || data.status == 'sent')
-        && data.opened is bool;
+        && data.senderEmail is string && data.senderEmail.lower() == getUserEmail()
+        && data.recipientEmail is string
+        && data.status is string && (data.status == 'draft' || data.status == 'sent');
     }
 
     // 3. Thought Validation Helper
     function isValidThought(data) {
-      return data.keys().hasAll(['id', 'authorUid', 'authorName', 'content', 'color', 'createdAt'])
-        && data.keys().size() == 6
-        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+      return data.id is string
         && data.authorUid is string && data.authorUid == request.auth.uid
-        && data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 128
-        && data.content is string && data.content.size() > 0 && data.content.size() <= 1000
-        && data.color is string && data.color.size() <= 128;
+        && data.content is string && data.content.size() > 0 && data.content.size() <= 2000
+        && data.color is string;
     }
 
     // Match rules

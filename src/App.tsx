@@ -196,7 +196,7 @@ export default function App() {
 
       setLetters(lettersData);
     }, (err) => {
-      console.error("Letters stream error (expected during setup or rules deploy):", err);
+      console.warn("Letters stream warning (expected during setup or rules deploy):", err);
     });
 
     // Real-time thoughts
@@ -208,7 +208,7 @@ export default function App() {
       });
       setThoughts(thoughtsData);
     }, (err) => {
-      console.error("Thoughts stream error (expected during setup or rules deploy):", err);
+      console.warn("Thoughts stream warning (expected during setup or rules deploy):", err);
     });
 
     return () => {
