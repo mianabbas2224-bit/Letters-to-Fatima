@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Thought, SpaceConfig } from "../types";
-import { collection, addDoc, doc, deleteDoc, serverTimestamp } from "firebase/firestore";
+import { collection, setDoc, doc, deleteDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
 import { Pin, Plus, Trash2, Heart, Clock, HelpCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
@@ -59,7 +59,7 @@ export default function ThoughtsBoard({
     };
 
     try {
-      await addDoc(collection(db, "thoughts"), newThought);
+      await setDoc(doc(db, "thoughts", thoughtId), newThought);
       setContent("");
     } catch (err: any) {
       console.error(err);

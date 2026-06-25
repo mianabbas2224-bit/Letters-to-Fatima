@@ -58,7 +58,7 @@ service cloud.firestore {
         && data.authorUid is string && data.authorUid == request.auth.uid
         && data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 128
         && data.content is string && data.content.size() > 0 && data.content.size() <= 1000
-        && data.color is string && data.color.size() <= 32;
+        && data.color is string && data.color.size() <= 128;
     }
 
     // Match rules

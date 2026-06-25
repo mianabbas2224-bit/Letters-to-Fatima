@@ -50,6 +50,13 @@ export default function App() {
     return unsubscribe;
   }, []);
 
+  // Request notification permissions
+  useEffect(() => {
+    if (user && "Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+  }, [user]);
+
   // Auto-retry when connection comes back online
   useEffect(() => {
     const handleOnline = () => {
@@ -165,6 +172,28 @@ export default function App() {
       snapshot.forEach((doc) => {
         lettersData.push({ id: doc.id, ...doc.data() } as Letter);
       });
+
+      // Handle real-time browser notifications for incoming letters
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const letter = change.doc.data() as Letter;
+          const createdTime = letter.createdAt ? new Date(letter.createdAt).getTime() : 0;
+          const now = Date.now();
+          if (
+            letter.recipientEmail?.toLowerCase() === user.email?.toLowerCase() &&
+            letter.status === "sent" &&
+            (now - createdTime) < 15000
+          ) {
+            if ("Notification" in window && Notification.permission === "granted") {
+              new Notification(`New Letter from ${letter.senderName}!`, {
+                body: letter.subject || "Open your mailbox to read.",
+                icon: "/logo.jpg",
+              });
+            }
+          }
+        }
+      });
+
       setLetters(lettersData);
     }, (err) => {
       console.error("Letters stream error (expected during setup or rules deploy):", err);
