@@ -92,7 +92,7 @@ export default function Login({ isAccessDenied, deniedEmail, onClearDenial }: Lo
           className="w-16 h-16 rounded-full flex items-center justify-center mb-3 overflow-hidden shadow-md"
         >
           <img
-            src="/src/assets/images/glossy_heart_icon_1782397977660.jpg"
+            src="/logo.jpg"
             alt="Glossy Heart Icon"
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"

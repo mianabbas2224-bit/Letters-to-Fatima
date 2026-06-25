@@ -33,7 +33,7 @@ export default function Navigation({ activeView, onViewChange, spaceConfig, curr
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
               <img
-                src="/src/assets/images/glossy_heart_icon_1782397977660.jpg"
+                src="/logo.jpg"
                 alt="Glossy Heart"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
