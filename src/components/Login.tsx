@@ -89,9 +89,14 @@ export default function Login({ isAccessDenied, deniedEmail, onClearDenial }: Lo
         <motion.div
           animate={{ scale: [1, 1.08, 1] }}
           transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
-          className="w-12 h-12 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-3 shadow-inner"
+          className="w-16 h-16 rounded-full flex items-center justify-center mb-3 overflow-hidden shadow-md"
         >
-          <Heart className="w-6 h-6 fill-rose-500/10" />
+          <img
+            src="/src/assets/images/glossy_heart_icon_1782397977660.jpg"
+            alt="Glossy Heart Icon"
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
         </motion.div>
         
         <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-stone-800 tracking-tight leading-tight">

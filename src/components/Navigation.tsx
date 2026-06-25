@@ -31,8 +31,13 @@ export default function Navigation({ activeView, onViewChange, spaceConfig, curr
         {/* Row 1: Brand Header and Mobile Logout */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 shadow-sm shrink-0">
-              <Heart className="w-4 h-4 fill-rose-500/10" />
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm shrink-0 overflow-hidden">
+              <img
+                src="/src/assets/images/glossy_heart_icon_1782397977660.jpg"
+                alt="Glossy Heart"
+                className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
+              />
             </div>
             <div>
               <div className="font-serif text-base font-semibold text-stone-800 whitespace-nowrap">
