@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function getUserEmail() {
+      return request.auth.token.email.lowerCase();
+    }
+
+    function isMember() {
+      return isSignedIn() && 
+        exists(/databases/$(database)/documents/config/space) && (
+          getUserEmail() == get(/databases/$(database)/documents/config/space).data.creatorEmail.lowerCase() ||
+          getUserEmail() == get(/databases/$(database)/documents/config/space).data.partnerEmail.lowerCase()
+        );
+    }
+
+    // 1. Space Config Validation Helper
+    function isValidSpaceConfig(data) {
+      return data.keys().hasAll(['initialized', 'creatorEmail', 'creatorName', 'partnerEmail', 'partnerName', 'createdAt'])
+        && data.keys().size() == 6
+        && data.initialized is bool
+        && data.creatorEmail is string && data.creatorEmail.size() > 0 && data.creatorEmail.size() <= 256
+        && data.creatorName is string && data.creatorName.size() > 0 && data.creatorName.size() <= 128
+        && data.partnerEmail is string && data.partnerEmail.size() > 0 && data.partnerEmail.size() <= 256
+        && data.partnerName is string && data.partnerName.size() > 0 && data.partnerName.size() <= 128;
+    }
+
+    // 2. Letter Validation Helper
+    function isValidLetter(data) {
+      return data.keys().hasAll(['id', 'senderUid', 'senderEmail', 'senderName', 'recipientEmail', 'recipientName', 'subject', 'content', 'stationery', 'status', 'opened', 'createdAt'])
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+        && data.senderUid is string && data.senderUid == request.auth.uid
+        && data.senderEmail is string && data.senderEmail.lowerCase() == getUserEmail()
+        && data.senderName is string && data.senderName.size() > 0 && data.senderName.size() <= 128
+        && data.recipientEmail is string && data.recipientEmail.size() > 0 && data.recipientEmail.size() <= 256
+        && data.recipientName is string && data.recipientName.size() > 0 && data.recipientName.size() <= 128
+        && data.subject is string && data.subject.size() <= 256
+        && data.content is string && data.content.size() <= 50000
+        && data.stationery is string && data.stationery.size() <= 64
+        && data.status is string && (data.status == 'draft' || data.status == 'sent')
+        && data.opened is bool;
+    }
+
+    // 3. Thought Validation Helper
+    function isValidThought(data) {
+      return data.keys().hasAll(['id', 'authorUid', 'authorName', 'content', 'color', 'createdAt'])
+        && data.keys().size() == 6
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 128
+        && data.authorUid is string && data.authorUid == request.auth.uid
+        && data.authorName is string && data.authorName.size() > 0 && data.authorName.size() <= 128
+        && data.content is string && data.content.size() > 0 && data.content.size() <= 1000
+        && data.color is string && data.color.size() <= 32;
+    }
+
+    // Match rules
+    match /config/space {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && (
+        getUserEmail() == 'abbasmian100@gmail.com' && isValidSpaceConfig(request.resource.data)
+      );
+      allow update: if isSignedIn() && isMember() && isValidSpaceConfig(request.resource.data);
+    }
+
+    match /letters/{letterId} {
+      allow read: if isMember();
+      allow create: if isMember() && isValidLetter(request.resource.data);
+      allow update: if isMember() && (
+        // Sender can edit if it's a draft and keep validating
+        (resource.data.senderEmail == getUserEmail() && resource.data.status == 'draft' && isValidLetter(request.resource.data)) ||
+        // Recipient can update 'opened' and 'openedAt'
+        (resource.data.recipientEmail == getUserEmail() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['opened', 'openedAt', 'openedBy']))
+      );
+      allow delete: if isMember() && resource.data.senderEmail == getUserEmail() && resource.data.status == 'draft';
+    }
+
+    match /thoughts/{thoughtId} {
+      allow read: if isMember();
+      allow create: if isMember() && isValidThought(request.resource.data);
+      allow update: if isMember() && resource.data.authorUid == request.auth.uid && isValidThought(request.resource.data);
+      allow delete: if isMember() && resource.data.authorUid == request.auth.uid;
+    }
+  }
+}

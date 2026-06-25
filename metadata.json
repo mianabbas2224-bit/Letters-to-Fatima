@@ -1,0 +1,6 @@
+{
+  "name": "Letters to Fatima",
+  "description": "A beautiful, private platform for Abbas and Fatima to exchange letters, envelopes, and sweet thoughts.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

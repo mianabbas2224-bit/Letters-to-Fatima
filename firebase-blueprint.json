@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "SpaceConfig": {
+      "title": "SpaceConfig",
+      "description": "Configuration for the private space defining the two authorized users.",
+      "type": "object",
+      "properties": {
+        "initialized": {
+          "type": "boolean",
+          "description": "Whether the space is initialized."
+        },
+        "creatorEmail": {
+          "type": "string",
+          "description": "Email address of the space creator."
+        },
+        "creatorName": {
+          "type": "string",
+          "description": "Name of the space creator."
+        },
+        "partnerEmail": {
+          "type": "string",
+          "description": "Email address of the partner."
+        },
+        "partnerName": {
+          "type": "string",
+          "description": "Name of the partner."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the space was created."
+        }
+      },
+      "required": ["initialized", "creatorEmail", "creatorName", "partnerEmail", "partnerName", "createdAt"]
+    },
+    "Letter": {
+      "title": "Letter",
+      "description": "A letter written from one person to another.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "senderUid": {
+          "type": "string"
+        },
+        "senderEmail": {
+          "type": "string"
+        },
+        "senderName": {
+          "type": "string"
+        },
+        "recipientEmail": {
+          "type": "string"
+        },
+        "recipientName": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "stationery": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "sent"]
+        },
+        "opened": {
+          "type": "boolean"
+        },
+        "openedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sentAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "senderUid", "senderEmail", "senderName", "recipientEmail", "recipientName", "subject", "content", "stationery", "status", "opened", "createdAt"]
+    },
+    "Thought": {
+      "title": "Thought",
+      "description": "A quick shared thought or sticky note.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "authorUid": {
+          "type": "string"
+        },
+        "authorName": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "authorUid", "authorName", "content", "color", "createdAt"]
+    }
+  },
+  "firestore": {
+    "config/space": {
+      "schema": { "$ref": "#/entities/SpaceConfig" },
+      "description": "The configuration document for the shared space."
+    },
+    "letters/{letterId}": {
+      "schema": { "$ref": "#/entities/Letter" },
+      "description": "Letters exchanged between the two users."
+    },
+    "thoughts/{thoughtId}": {
+      "schema": { "$ref": "#/entities/Thought" },
+      "description": "Thoughts or virtual sticky notes shared between the two users."
+    }
+  }
+}
